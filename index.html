@@ -1,0 +1,1177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CaptionWala — AI Captions for Your Business</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --teal: #0B4F5E;
+    --teal-mid: #1A7A8A;
+    --teal-light: #E0F4F7;
+    --orange: #FF6B35;
+    --orange-light: #FFF0EA;
+    --cream: #FFFAF6;
+    --ink: #1A1A1A;
+    --muted: #6B6B6B;
+    --border: #E8E0D8;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--cream); color: var(--ink); line-height: 1.6; overflow-x: hidden; }
+  h1, h2, h3 { font-family: 'Syne', sans-serif; }
+
+  /* NAV */
+  nav { display: flex; align-items: center; justify-content: space-between; padding: 16px 5%; border-bottom: 1px solid var(--border); background: var(--cream); position: sticky; top: 0; z-index: 100; }
+  .logo { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800; color: var(--teal); letter-spacing: -0.5px; }
+  .logo span { color: var(--orange); }
+  .nav-links a { font-size: 14px; color: var(--muted); text-decoration: none; margin-left: 24px; font-weight: 500; transition: color .2s; }
+  .nav-links a:hover { color: var(--ink); }
+  .nav-cta { background: var(--orange) !important; color: #fff !important; padding: 8px 20px; border-radius: 8px; font-weight: 600 !important; }
+
+  /* HERO */
+  .hero { padding: 80px 5% 70px; display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: start; max-width: 1160px; margin: 0 auto; }
+  .hero-eyebrow { display: inline-flex; align-items: center; gap: 8px; background: var(--teal-light); color: var(--teal); font-size: 13px; font-weight: 600; padding: 5px 14px; border-radius: 20px; margin-bottom: 20px; }
+  .hero-eyebrow::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--teal-mid); }
+  h1 { font-size: clamp(34px, 4vw, 52px); font-weight: 800; line-height: 1.1; letter-spacing: -1.5px; margin-bottom: 18px; }
+  h1 .hl { color: var(--orange); }
+  .hero-sub { font-size: 17px; color: var(--muted); line-height: 1.65; margin-bottom: 32px; }
+  .hero-sub strong { color: var(--ink); font-weight: 600; }
+  .cta-group { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-bottom: 20px; }
+  .btn-primary { display: inline-block; background: var(--orange); color: #fff; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 15px; font-weight: 600; padding: 13px 26px; border-radius: 10px; text-decoration: none; border: none; cursor: pointer; transition: transform .15s, opacity .15s; }
+  .btn-primary:hover { transform: translateY(-1px); opacity: .9; }
+  .btn-secondary { display: inline-block; background: transparent; color: var(--teal); font-family: 'Plus Jakarta Sans', sans-serif; font-size: 15px; font-weight: 600; padding: 13px 26px; border-radius: 10px; text-decoration: none; border: 1.5px solid var(--teal); cursor: pointer; transition: background .15s; }
+  .btn-secondary:hover { background: var(--teal-light); }
+  .hero-trust { font-size: 13px; color: var(--muted); display: flex; align-items: center; gap: 8px; }
+  .stars { color: #F5A623; }
+
+  /* GENERATOR CARD */
+  .gen-card { background: #fff; border: 1px solid var(--border); border-radius: 18px; padding: 26px; box-shadow: 0 8px 40px rgba(11,79,94,.09); }
+  .gen-card-top { display: flex; align-items: center; gap: 8px; margin-bottom: 18px; padding-bottom: 14px; border-bottom: 1px solid var(--border); }
+  .dot { width: 10px; height: 10px; border-radius: 50%; }
+  .dot-r { background: #FF5F56; } .dot-y { background: #FFBD2E; } .dot-g { background: #27C93F; }
+  .gen-card-top span { font-size: 13px; font-weight: 600; color: var(--muted); margin-left: 4px; }
+
+  .field-label { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 5px; }
+  .field-wrap { margin-bottom: 12px; }
+  .gen-input { width: 100%; background: var(--cream); border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 13px; color: var(--ink); outline: none; transition: border-color .2s; }
+  .gen-input:focus { border-color: var(--teal-mid); }
+  textarea.gen-input { resize: none; height: 72px; }
+
+  .toggle-row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; }
+  .toggle-btn { font-size: 12px; font-weight: 600; padding: 5px 12px; border-radius: 20px; border: 1.5px solid var(--border); background: transparent; color: var(--muted); cursor: pointer; transition: all .15s; font-family: 'Plus Jakarta Sans', sans-serif; }
+  .toggle-btn.active { border-color: var(--teal-mid); background: var(--teal-light); color: var(--teal); }
+
+  .gen-btn { width: 100%; background: var(--orange); color: #fff; border: none; border-radius: 10px; padding: 13px; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 15px; font-weight: 700; cursor: pointer; transition: opacity .2s, transform .15s; display: flex; align-items: center; justify-content: center; gap: 8px; }
+  .gen-btn:hover:not(:disabled) { opacity: .9; transform: translateY(-1px); }
+  .gen-btn:disabled { opacity: .6; cursor: not-allowed; transform: none; }
+
+  .usage-bar { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; }
+  .usage-track { flex: 1; height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; }
+  .usage-fill { height: 100%; background: var(--teal-mid); border-radius: 2px; transition: width .4s; }
+  .usage-text { font-size: 11px; color: var(--muted); white-space: nowrap; }
+
+  /* OUTPUT AREA */
+  .output-area { margin-top: 14px; display: none; }
+  .output-area.show { display: block; }
+  .output-box { background: var(--teal-light); border-radius: 12px; padding: 16px 18px; position: relative; }
+  .output-label { font-size: 11px; font-weight: 700; color: var(--teal-mid); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+  .copy-btn { font-size: 12px; font-weight: 600; color: var(--teal); background: #fff; border: 1px solid var(--teal-light); padding: 3px 10px; border-radius: 6px; cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif; transition: background .15s; }
+  .copy-btn:hover { background: var(--teal-light); }
+  .copy-btn.copied { color: #0F6E56; background: #d0f0e0; border-color: #0F6E56; }
+  #caption-text { font-size: 14px; color: var(--teal); line-height: 1.7; white-space: pre-wrap; word-break: break-word; }
+  .hashtags-row { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+  .htag { font-size: 12px; color: var(--teal-mid); font-weight: 600; background: rgba(27,122,138,.1); padding: 2px 8px; border-radius: 4px; }
+
+  .loading-dots { display: none; align-items: center; gap: 4px; }
+  .loading-dots.show { display: flex; }
+  .ld { width: 7px; height: 7px; border-radius: 50%; background: var(--teal-mid); animation: ldpulse 1s ease-in-out infinite; }
+  .ld:nth-child(2) { animation-delay: .15s; }
+  .ld:nth-child(3) { animation-delay: .3s; }
+  @keyframes ldpulse { 0%,80%,100%{transform:scale(.6);opacity:.4} 40%{transform:scale(1);opacity:1} }
+  .regen-btn { margin-top: 10px; width: 100%; font-size: 13px; font-weight: 600; color: var(--teal); background: transparent; border: 1.5px solid var(--teal-light); border-radius: 8px; padding: 8px; cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif; transition: background .15s; }
+  .regen-btn:hover { background: var(--teal-light); }
+
+  /* LOGOS */
+  .logos-strip { background: var(--teal); padding: 20px 5%; }
+  .logos-inner { display: flex; justify-content: center; align-items: center; gap: 36px; flex-wrap: wrap; max-width: 1000px; margin: 0 auto; }
+  .logo-item { font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700; color: rgba(255,255,255,.5); text-transform: uppercase; letter-spacing: .04em; }
+
+  /* PAIN */
+  .pain { padding: 80px 5%; max-width: 1160px; margin: 0 auto; }
+  .section-eyebrow { font-size: 12px; font-weight: 700; color: var(--orange); text-transform: uppercase; letter-spacing: .1em; margin-bottom: 12px; }
+  .section-title { font-size: clamp(26px, 3.5vw, 38px); font-weight: 800; letter-spacing: -1px; line-height: 1.15; margin-bottom: 12px; }
+  .section-sub { font-size: 17px; color: var(--muted); max-width: 540px; line-height: 1.65; margin-bottom: 40px; }
+  .pain-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .pain-card { background: #fff; border: 1px solid var(--border); border-radius: 14px; padding: 24px; }
+  .pain-icon { width: 40px; height: 40px; background: var(--orange-light); border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-bottom: 14px; }
+  .pain-icon svg { width: 20px; height: 20px; stroke: var(--orange); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .pain-card h3 { font-size: 15px; font-weight: 700; margin-bottom: 7px; }
+  .pain-card p { font-size: 14px; color: var(--muted); line-height: 1.6; }
+
+  /* HOW */
+  .how { background: var(--teal); padding: 80px 5%; }
+  .how-inner { max-width: 1160px; margin: 0 auto; }
+  .how .section-eyebrow { color: #7ECCD8; }
+  .how .section-title { color: #fff; }
+  .how .section-sub { color: rgba(255,255,255,.6); }
+  .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; background: rgba(255,255,255,.1); border-radius: 16px; overflow: hidden; }
+  .step { background: rgba(255,255,255,.04); padding: 30px 26px; }
+  .step-num { font-family: 'Syne', sans-serif; font-size: 46px; font-weight: 800; color: rgba(255,255,255,.1); line-height: 1; margin-bottom: 14px; }
+  .step-tag { display: inline-block; background: var(--orange); color: #fff; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 20px; margin-bottom: 12px; }
+  .step h3 { font-size: 17px; font-weight: 700; color: #fff; margin-bottom: 8px; }
+  .step p { font-size: 14px; color: rgba(255,255,255,.6); line-height: 1.65; }
+
+  /* FEATURES */
+  .features { padding: 80px 5%; max-width: 1160px; margin: 0 auto; }
+  .feat-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+  .feat-card { background: #fff; border: 1px solid var(--border); border-radius: 14px; padding: 22px 24px; display: flex; gap: 14px; align-items: flex-start; }
+  .feat-icon { width: 42px; height: 42px; background: var(--teal-light); border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .feat-icon svg { width: 20px; height: 20px; stroke: var(--teal); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .feat-card h3 { font-size: 15px; font-weight: 700; margin-bottom: 5px; }
+  .feat-card p { font-size: 14px; color: var(--muted); line-height: 1.6; }
+
+  /* LIVE DEMO SECTION */
+  .demo-section { background: linear-gradient(135deg, #0B4F5E 0%, #1A7A8A 100%); padding: 80px 5%; }
+  .demo-inner { max-width: 780px; margin: 0 auto; text-align: center; }
+  .demo-inner .section-eyebrow { color: #7ECCD8; }
+  .demo-inner .section-title { color: #fff; margin-bottom: 12px; }
+  .demo-inner .section-sub { color: rgba(255,255,255,.65); margin: 0 auto 40px; }
+  .demo-card { background: #fff; border-radius: 18px; padding: 28px; text-align: left; }
+
+  /* TESTIMONIALS */
+  .testimonials { background: var(--orange-light); padding: 80px 5%; }
+  .test-inner { max-width: 1160px; margin: 0 auto; }
+  .test-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 40px; }
+  .test-card { background: #fff; border: 1px solid var(--border); border-radius: 14px; padding: 22px; }
+  .test-stars { color: #F5A623; font-size: 15px; margin-bottom: 10px; }
+  .test-quote { font-size: 14px; line-height: 1.65; color: var(--ink); font-style: italic; margin-bottom: 16px; }
+  .test-author { display: flex; align-items: center; gap: 10px; }
+  .avatar { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Syne', sans-serif; font-size: 12px; font-weight: 800; color: #fff; }
+  .test-name { font-size: 13px; font-weight: 600; }
+  .test-biz { font-size: 12px; color: var(--muted); }
+
+  /* PRICING */
+  .pricing { padding: 80px 5%; max-width: 900px; margin: 0 auto; text-align: center; }
+  .price-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 40px; text-align: left; }
+  .price-card { background: #fff; border: 1px solid var(--border); border-radius: 16px; padding: 26px 22px; }
+  .price-card.featured { background: var(--teal); border-color: var(--teal); color: #fff; transform: scale(1.04); }
+  .price-badge { display: inline-block; background: var(--orange); color: #fff; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 20px; margin-bottom: 12px; }
+  .price-plan { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin-bottom: 6px; }
+  .price-card.featured .price-plan { color: rgba(255,255,255,.6); }
+  .price-amount { font-family: 'Syne', sans-serif; font-size: 34px; font-weight: 800; line-height: 1; margin-bottom: 4px; }
+  .price-period { font-size: 13px; color: var(--muted); margin-bottom: 18px; }
+  .price-card.featured .price-period { color: rgba(255,255,255,.55); }
+  .price-divider { height: 1px; background: var(--border); margin-bottom: 18px; }
+  .price-card.featured .price-divider { background: rgba(255,255,255,.2); }
+  .price-features { list-style: none; }
+  .price-features li { font-size: 13px; padding: 4px 0; color: var(--muted); display: flex; align-items: center; gap: 8px; }
+  .price-card.featured .price-features li { color: rgba(255,255,255,.8); }
+  .price-features li::before { content: '✓'; font-weight: 700; color: var(--teal-mid); flex-shrink: 0; }
+  .price-card.featured .price-features li::before { color: #7ECCD8; }
+  .price-btn { display: block; text-align: center; margin-top: 22px; padding: 12px; border-radius: 10px; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 14px; font-weight: 700; text-decoration: none; cursor: pointer; border: 2px solid var(--teal); color: var(--teal); background: transparent; transition: background .15s; }
+  .price-btn:hover { background: var(--teal-light); }
+  .price-card.featured .price-btn { background: var(--orange); border-color: var(--orange); color: #fff; }
+
+  /* FAQ */
+  .faq { padding: 80px 5%; max-width: 720px; margin: 0 auto; }
+  .faq-list { margin-top: 36px; }
+  .faq-item { border-bottom: 1px solid var(--border); padding: 16px 0; }
+  .faq-q { font-size: 15px; font-weight: 700; cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+  .faq-icon { font-size: 20px; color: var(--muted); transition: transform .2s; flex-shrink: 0; line-height: 1; }
+  .faq-item.open .faq-icon { transform: rotate(45deg); }
+  .faq-a { font-size: 14px; color: var(--muted); line-height: 1.7; max-height: 0; overflow: hidden; transition: max-height .3s ease, padding .3s; }
+  .faq-item.open .faq-a { max-height: 200px; padding-top: 10px; }
+
+  /* CTA */
+  .cta-section { background: var(--teal); padding: 90px 5%; text-align: center; color: #fff; }
+  .cta-section h2 { font-size: clamp(28px, 4vw, 46px); font-weight: 800; letter-spacing: -1px; margin-bottom: 14px; }
+  .cta-section p { font-size: 17px; color: rgba(255,255,255,.7); margin-bottom: 36px; max-width: 500px; margin-left: auto; margin-right: auto; }
+  .cta-note { font-size: 12px; color: rgba(255,255,255,.4); margin-top: 14px; }
+
+  footer { background: #0D2B34; padding: 22px 5%; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+  footer .logo { color: rgba(255,255,255,.75); font-size: 18px; }
+  footer p { font-size: 12px; color: rgba(255,255,255,.3); }
+
+  /* Toast */
+  .toast { position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--ink); color: #fff; font-size: 13px; font-weight: 600; padding: 10px 22px; border-radius: 20px; opacity: 0; transition: transform .3s, opacity .3s; z-index: 999; white-space: nowrap; }
+  .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+
+  @media (max-width: 768px) {
+    .hero { grid-template-columns: 1fr; gap: 36px; padding: 44px 5% 50px; }
+    .pain-grid, .steps, .feat-grid, .test-grid, .price-grid { grid-template-columns: 1fr; }
+    .price-card.featured { transform: none; }
+    .nav-links a:not(.nav-cta) { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="logo">Caption<span>Wala</span></div>
+  <div class="nav-links">
+    <a href="#features">Features</a>
+    <a href="#pricing">Pricing</a>
+    <a href="#faq">FAQ</a>
+    <a href="#demo" class="nav-cta" onclick="event.preventDefault();openTrialModal('free')">Try Free</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div>
+    <div class="hero-eyebrow">Made for Indian businesses</div>
+    <h1>Daily Instagram<br>captions in<br><span class="hl">10 seconds</span></h1>
+    <p class="hero-sub">No more staring at a blank screen. Type your product, pick your tone — CaptionWala writes <strong>ready-to-post captions + hashtags</strong> for your restaurant, salon, shop, or brand. In Hindi or English.</p>
+    <div class="cta-group">
+      <a href="#demo" class="btn-primary">Try it free now</a>
+      <a href="#how" class="btn-secondary">See how it works</a>
+    </div>
+    <div class="hero-trust">
+      <span class="stars">★★★★★</span>
+      <span>Trusted by 2,000+ small business owners across India</span>
+    </div>
+  </div>
+
+  <!-- LIVE GENERATOR (hero) -->
+  <div class="gen-card" id="hero-gen">
+    <div class="gen-card-top">
+      <div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div>
+      <span>captionwala.in — live generator</span>
+    </div>
+
+    <div class="field-wrap">
+      <div class="field-label">Your business name</div>
+      <input class="gen-input" id="h-biz" type="text" placeholder="e.g. Sharma Ji ki Mithai, Ahmedabad">
+    </div>
+    <div class="field-wrap">
+      <div class="field-label">What to post about</div>
+      <textarea class="gen-input" id="h-topic" placeholder="e.g. Diwali special kaju katli — 20% off today"></textarea>
+    </div>
+
+    <div class="field-wrap">
+      <div class="field-label">Language</div>
+      <div class="toggle-row" id="h-lang-row">
+        <button class="toggle-btn active" data-val="English">English</button>
+        <button class="toggle-btn" data-val="Hinglish">Hinglish</button>
+        <button class="toggle-btn" data-val="Hindi">Hindi</button>
+      </div>
+    </div>
+
+    <div class="field-wrap">
+      <div class="field-label">Tone</div>
+      <div class="toggle-row" id="h-tone-row">
+        <button class="toggle-btn active" data-val="Festive">Festive</button>
+        <button class="toggle-btn" data-val="Urgent">Urgent</button>
+        <button class="toggle-btn" data-val="Professional">Professional</button>
+        <button class="toggle-btn" data-val="Funny">Funny</button>
+      </div>
+    </div>
+
+    <div class="usage-bar">
+      <div class="usage-track"><div class="usage-fill" id="usage-fill" style="width:100%"></div></div>
+      <div class="usage-text" id="usage-text">5 free captions left</div>
+    </div>
+
+    <button class="gen-btn" id="h-gen-btn" onclick="generateCaption('hero')">
+      <span id="h-btn-text">Generate caption ✦</span>
+      <div class="loading-dots" id="h-loading"><div class="ld"></div><div class="ld"></div><div class="ld"></div></div>
+    </button>
+
+    <div class="output-area" id="h-output">
+      <div class="output-box">
+        <div class="output-label">
+          Your caption
+          <button class="copy-btn" id="h-copy-btn" onclick="copyCaption('hero')">Copy</button>
+        </div>
+        <div id="caption-text"></div>
+        <div class="hashtags-row" id="h-hashtags"></div>
+      </div>
+      <button class="regen-btn" onclick="generateCaption('hero')">↻ Generate another version</button>
+    </div>
+  </div>
+</section>
+
+<!-- LOGOS STRIP -->
+<div class="logos-strip">
+  <div class="logos-inner">
+    <span class="logo-item">Restaurants</span>
+    <span class="logo-item">·</span>
+    <span class="logo-item">Salons</span>
+    <span class="logo-item">·</span>
+    <span class="logo-item">Clothing shops</span>
+    <span class="logo-item">·</span>
+    <span class="logo-item">Sweet shops</span>
+    <span class="logo-item">·</span>
+    <span class="logo-item">Coaching classes</span>
+    <span class="logo-item">·</span>
+    <span class="logo-item">Gyms</span>
+    <span class="logo-item">·</span>
+    <span class="logo-item">Jewellery stores</span>
+  </div>
+</div>
+
+<!-- PAIN -->
+<section class="pain">
+  <div class="section-eyebrow">The real problem</div>
+  <h2 class="section-title">You're great at your business.<br>Not at writing posts.</h2>
+  <p class="section-sub">And that's completely fine — because that's not your job. But Instagram doesn't care. It still needs 1–2 posts every single day.</p>
+  <div class="pain-grid">
+    <div class="pain-card">
+      <div class="pain-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg></div>
+      <h3>Hours wasted every week</h3>
+      <p>Most shop owners spend 30–60 minutes daily just thinking of what to post. That's 3+ hours every week — gone.</p>
+    </div>
+    <div class="pain-card">
+      <div class="pain-icon"><svg viewBox="0 0 24 24"><path d="M9 12h6M9 16h4M9 8h6M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg></div>
+      <h3>Captions that don't sell</h3>
+      <p>"New collection available" doesn't drive customers. You need words that create urgency, emotion, and action.</p>
+    </div>
+    <div class="pain-card">
+      <div class="pain-icon"><svg viewBox="0 0 24 24"><path d="M18.36 6.64a9 9 0 11-12.73 0M12 2v10"/></svg></div>
+      <h3>Posting inconsistently</h3>
+      <p>Skipping 2–3 days kills your reach. The algorithm punishes gaps. But who has time to post every day?</p>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="how" id="how">
+  <div class="how-inner">
+    <div class="section-eyebrow">How it works</div>
+    <h2 class="section-title" style="color:#fff">Ready in 3 simple steps</h2>
+    <p class="section-sub">No training needed. No design skills. Just type and post.</p>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">01</div>
+        <span class="step-tag">10 seconds</span>
+        <h3>Tell us what to post</h3>
+        <p>Enter your business name, what you're promoting, and the tone — festive, professional, fun, or urgent.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">02</div>
+        <span class="step-tag">Instant</span>
+        <h3>AI writes your caption</h3>
+        <p>CaptionWala generates a complete caption with a perfect call-to-action and relevant hashtags — in Hindi or English.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">03</div>
+        <span class="step-tag">Done</span>
+        <h3>Copy, paste, post</h3>
+        <p>One click to copy. Paste into Instagram, Facebook, or WhatsApp Status. Your followers will never know it took 10 seconds.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="features" id="features">
+  <div class="section-eyebrow">What you get</div>
+  <h2 class="section-title">Everything you need to stay consistent</h2>
+  <p class="section-sub">Built specifically for Indian small businesses — not global brands, not influencers. You.</p>
+  <div class="feat-grid">
+    <div class="feat-card">
+      <div class="feat-icon"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></div>
+      <div><h3>Hindi + Hinglish captions</h3><p>Write in Hindi, Hinglish, or English. Your customers connect more with captions in their own language.</p></div>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon"><svg viewBox="0 0 24 24"><path d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14"/></svg></div>
+      <div><h3>Trending hashtags included</h3><p>Every caption comes with 10–15 curated hashtags relevant to your city, industry, and season.</p></div>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
+      <div><h3>Festival & occasion calendar</h3><p>Diwali, Eid, Navratri, Ganesh Chaturthi — auto-suggestions for every Indian festival so you never miss a sales moment.</p></div>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon"><svg viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg></div>
+      <div><h3>Unlimited variations</h3><p>Not happy? Click regenerate and get a completely fresh caption. No two outputs are ever the same.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- FULL DEMO SECTION -->
+<section class="demo-section" id="demo">
+  <div class="demo-inner">
+    <div class="section-eyebrow">Try it yourself</div>
+    <h2 class="section-title">Generate a real caption now</h2>
+    <p class="section-sub">No signup needed. Just fill in your details and see the magic.</p>
+    <div class="demo-card">
+      <div class="field-wrap">
+        <div class="field-label">Your business name & city</div>
+        <input class="gen-input" id="d-biz" type="text" placeholder="e.g. Meena Salon, Jaipur">
+      </div>
+      <div class="field-wrap">
+        <div class="field-label">What are you promoting?</div>
+        <textarea class="gen-input" id="d-topic" placeholder="e.g. New monsoon hair care package — hair spa + head massage for ₹499"></textarea>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;">
+        <div>
+          <div class="field-label" style="margin-bottom:6px;">Language</div>
+          <div class="toggle-row" id="d-lang-row">
+            <button class="toggle-btn active" data-val="English">English</button>
+            <button class="toggle-btn" data-val="Hinglish">Hinglish</button>
+            <button class="toggle-btn" data-val="Hindi">Hindi</button>
+          </div>
+        </div>
+        <div>
+          <div class="field-label" style="margin-bottom:6px;">Tone</div>
+          <div class="toggle-row" id="d-tone-row">
+            <button class="toggle-btn active" data-val="Festive">Festive</button>
+            <button class="toggle-btn" data-val="Urgent">Urgent</button>
+            <button class="toggle-btn" data-val="Professional">Professional</button>
+            <button class="toggle-btn" data-val="Funny">Funny</button>
+          </div>
+        </div>
+      </div>
+      <div class="field-wrap">
+        <div class="field-label">Platform</div>
+        <div class="toggle-row" id="d-platform-row">
+          <button class="toggle-btn active" data-val="Instagram">Instagram</button>
+          <button class="toggle-btn" data-val="Facebook">Facebook</button>
+          <button class="toggle-btn" data-val="WhatsApp Status">WhatsApp Status</button>
+        </div>
+      </div>
+
+      <button class="gen-btn" id="d-gen-btn" onclick="generateCaption('demo')">
+        <span id="d-btn-text">Generate caption ✦</span>
+        <div class="loading-dots" id="d-loading"><div class="ld"></div><div class="ld"></div><div class="ld"></div></div>
+      </button>
+
+      <div class="output-area" id="d-output" style="margin-top:16px;">
+        <div class="output-box">
+          <div class="output-label">
+            Your caption
+            <button class="copy-btn" id="d-copy-btn" onclick="copyCaption('demo')">Copy</button>
+          </div>
+          <div id="d-caption-text"></div>
+          <div class="hashtags-row" id="d-hashtags"></div>
+        </div>
+        <button class="regen-btn" onclick="generateCaption('demo')" style="border-color:#E0F4F7;">↻ Generate another version</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="testimonials">
+  <div class="test-inner">
+    <div class="section-eyebrow">Real customers</div>
+    <h2 class="section-title">What business owners are saying</h2>
+    <div class="test-grid">
+      <div class="test-card">
+        <div class="test-stars">★★★★★</div>
+        <p class="test-quote">"Pehle roz sochta tha kya post karun. Ab bas type karo aur kaam ho jata hai. Mere orders bhi 30% badhh gaye Instagram se."</p>
+        <div class="test-author">
+          <div class="avatar" style="background:#0B4F5E;">RS</div>
+          <div><div class="test-name">Ramesh Shah</div><div class="test-biz">Textile shop, Surat</div></div>
+        </div>
+      </div>
+      <div class="test-card">
+        <div class="test-stars">★★★★★</div>
+        <p class="test-quote">"I run a beauty parlour and I'm not good with English. CaptionWala writes perfect Hinglish captions that my customers actually like and share."</p>
+        <div class="test-author">
+          <div class="avatar" style="background:#FF6B35;">PK</div>
+          <div><div class="test-name">Priya Khatri</div><div class="test-biz">Beauty parlour, Jaipur</div></div>
+        </div>
+      </div>
+      <div class="test-card">
+        <div class="test-stars">★★★★★</div>
+        <p class="test-quote">"My restaurant's Instagram used to be dead for weeks. Now I post daily and our footfall has gone up. Worth every rupee of ₹299/month."</p>
+        <div class="test-author">
+          <div class="avatar" style="background:#1A7A8A;">AM</div>
+          <div><div class="test-name">Arjun Mehta</div><div class="test-biz">Restaurant owner, Pune</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section class="pricing" id="pricing">
+  <div class="section-eyebrow">Simple pricing</div>
+  <h2 class="section-title">Start free. Upgrade when ready.</h2>
+  <p style="font-size:16px;color:var(--muted);margin-top:8px;">No contracts. No hidden fees. Cancel anytime.</p>
+  <div class="price-grid">
+    <div class="price-card">
+      <div class="price-plan">Free</div>
+      <div class="price-amount">₹0</div>
+      <div class="price-period">forever</div>
+      <div class="price-divider"></div>
+      <ul class="price-features">
+        <li>5 captions per day</li>
+        <li>English captions only</li>
+        <li>Basic hashtags</li>
+        <li>3 tones available</li>
+      </ul>
+      <button onclick="openTrialModal('free')" class="price-btn">Get started free</button>
+    </div>
+    <div class="price-card featured">
+      <span class="price-badge">Most popular</span>
+      <div class="price-plan">Pro</div>
+      <div class="price-amount">₹299</div>
+      <div class="price-period">per month</div>
+      <div class="price-divider"></div>
+      <ul class="price-features">
+        <li>Unlimited captions</li>
+        <li>Hindi + Hinglish + English</li>
+        <li>Trending hashtags</li>
+        <li>All 8 tones</li>
+        <li>Festival calendar</li>
+        <li>WhatsApp delivery</li>
+      </ul>
+      <button onclick="openTrialModal('pro')" class="price-btn">Start 7-day free trial</button>
+    </div>
+    <div class="price-card">
+      <div class="price-plan">Business</div>
+      <div class="price-amount">₹699</div>
+      <div class="price-period">per month</div>
+      <div class="price-divider"></div>
+      <ul class="price-features">
+        <li>Everything in Pro</li>
+        <li>3 business profiles</li>
+        <li>Captions for 5 platforms</li>
+        <li>Priority support</li>
+        <li>Custom brand tone</li>
+      </ul>
+      <button onclick="openTrialModal('business')" class="price-btn">Start 7-day free trial</button>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="faq" id="faq">
+  <div class="section-eyebrow" style="text-align:center">Questions</div>
+  <h2 class="section-title" style="text-align:center">Frequently asked</h2>
+  <div class="faq-list" id="faq-list">
+    <div class="faq-item">
+      <div class="faq-q">Do I need any technical skills?<span class="faq-icon">+</span></div>
+      <div class="faq-a">Not at all. If you can type a message on WhatsApp, you can use CaptionWala. No training, no learning curve — just type what you want to post about and click Generate.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">Will the captions sound like my business?<span class="faq-icon">+</span></div>
+      <div class="faq-a">Yes. You enter your business name, what you're promoting, and your preferred tone. CaptionWala creates captions that feel personal to your shop — not generic copy-paste content.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">Can I get captions in Hindi or Hinglish?<span class="faq-icon">+</span></div>
+      <div class="faq-a">Absolutely — this is one of our most loved features. Pro users can generate in pure Hindi, Hinglish (the mix that most Indian audiences love), or English.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">How many captions can I generate?<span class="faq-icon">+</span></div>
+      <div class="faq-a">The free plan gives you 5 per day — enough to test it out. Pro and Business plans give unlimited captions. Most businesses use 1–3 per day.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">What payment methods do you accept?<span class="faq-icon">+</span></div>
+      <div class="faq-a">We accept all UPI apps (PhonePe, Google Pay, Paytm), credit/debit cards, and net banking. Payment is fully secure via Razorpay.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">Can I cancel anytime?<span class="faq-icon">+</span></div>
+      <div class="faq-a">Yes, cancel anytime with one click from your account settings. No questions asked. Your subscription simply doesn't renew after the current month.</div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <h2>Start posting better captions today.</h2>
+  <p>Join 2,000+ Indian shop owners who save hours every week and grow their business with CaptionWala.</p>
+  <a href="#" onclick="event.preventDefault();openTrialModal('free')" class="btn-primary" style="font-size:15px;padding:15px 34px;">Try 5 captions free — no card needed</a>
+  <p class="cta-note">Free forever plan available · Setup in under 2 minutes</p>
+</section>
+
+<footer>
+  <div class="logo">Caption<span>Wala</span></div>
+  <p>Made with love for Indian small businesses · © 2025 CaptionWala</p>
+</footer>
+
+<!-- ── TRIAL SIGNUP MODAL ── -->
+<style>
+  .modal-backdrop {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(10,30,40,.55);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .modal-backdrop.open { display: flex; }
+
+  .modal-box {
+    background: #fff;
+    border-radius: 20px;
+    width: 100%;
+    max-width: 460px;
+    padding: 36px 32px 32px;
+    position: relative;
+    animation: modalPop .22s cubic-bezier(.34,1.56,.64,1);
+  }
+  @keyframes modalPop {
+    from { transform: scale(.88); opacity: 0; }
+    to   { transform: scale(1);   opacity: 1; }
+  }
+
+  .modal-close {
+    position: absolute; top: 16px; right: 18px;
+    background: none; border: none; font-size: 22px;
+    color: #888; cursor: pointer; line-height: 1;
+    padding: 4px 8px; border-radius: 6px;
+    transition: background .15s;
+  }
+  .modal-close:hover { background: #f0ede8; }
+
+  .modal-plan-badge {
+    display: inline-block;
+    font-size: 12px; font-weight: 700;
+    padding: 4px 12px; border-radius: 20px;
+    margin-bottom: 14px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+  }
+  .badge-free     { background: #E0F4F7; color: #0B4F5E; }
+  .badge-pro      { background: #FF6B35; color: #fff; }
+  .badge-business { background: #0B4F5E; color: #fff; }
+
+  .modal-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 24px; font-weight: 800;
+    letter-spacing: -.5px;
+    color: #1A1A1A;
+    margin-bottom: 6px;
+  }
+  .modal-sub {
+    font-size: 14px; color: #6B6B6B;
+    margin-bottom: 24px; line-height: 1.55;
+  }
+
+  .m-field { margin-bottom: 14px; }
+  .m-label {
+    display: block;
+    font-size: 11px; font-weight: 700;
+    color: #6B6B6B; text-transform: uppercase;
+    letter-spacing: .06em; margin-bottom: 5px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+  }
+  .m-input {
+    width: 100%;
+    border: 1.5px solid #E8E0D8;
+    border-radius: 10px;
+    padding: 11px 14px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 14px; color: #1A1A1A;
+    background: #FFFAF6;
+    outline: none;
+    transition: border-color .2s, box-shadow .2s;
+  }
+  .m-input:focus {
+    border-color: #1A7A8A;
+    box-shadow: 0 0 0 3px rgba(26,122,138,.12);
+  }
+  .m-input.error { border-color: #E24B4A; }
+  .m-error-msg {
+    font-size: 11px; color: #A32D2D;
+    margin-top: 4px; display: none;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+  }
+  .m-error-msg.show { display: block; }
+
+  .m-submit {
+    width: 100%;
+    background: #FF6B35; color: #fff;
+    border: none; border-radius: 12px;
+    padding: 14px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 15px; font-weight: 700;
+    cursor: pointer;
+    transition: opacity .2s, transform .15s;
+    margin-top: 6px;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+  }
+  .m-submit:hover:not(:disabled) { opacity: .9; transform: translateY(-1px); }
+  .m-submit:disabled { opacity: .6; cursor: not-allowed; transform: none; }
+  .m-submit-teal { background: #0B4F5E; }
+
+  .m-note {
+    font-size: 12px; color: #999; text-align: center;
+    margin-top: 12px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+  }
+  .m-note a { color: #1A7A8A; text-decoration: none; }
+
+  /* Success screen */
+  .modal-success { display: none; text-align: center; }
+  .modal-success.show { display: block; }
+  .modal-form-wrap.hide { display: none; }
+
+  .success-icon {
+    width: 64px; height: 64px; border-radius: 50%;
+    background: #E1F5EE;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 18px;
+  }
+  .success-icon svg { width: 30px; height: 30px; }
+  .success-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 22px; font-weight: 800;
+    color: #1A1A1A; margin-bottom: 10px;
+  }
+  .success-msg {
+    font-size: 14px; color: #6B6B6B;
+    line-height: 1.65; margin-bottom: 24px;
+  }
+  .success-msg strong { color: #1A1A1A; }
+  .success-steps {
+    background: #FFFAF6; border: 1px solid #E8E0D8;
+    border-radius: 12px; padding: 16px 18px;
+    text-align: left; margin-bottom: 22px;
+  }
+  .success-step {
+    display: flex; gap: 10px; align-items: flex-start;
+    font-size: 13px; color: #444;
+    padding: 5px 0;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+  }
+  .s-num {
+    width: 20px; height: 20px; border-radius: 50%;
+    background: #0B4F5E; color: #fff;
+    font-size: 11px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; margin-top: 1px;
+  }
+  .wa-btn {
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    width: 100%;
+    background: #25D366; color: #fff;
+    border: none; border-radius: 12px;
+    padding: 13px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 15px; font-weight: 700;
+    cursor: pointer; text-decoration: none;
+    transition: opacity .2s;
+  }
+  .wa-btn:hover { opacity: .9; }
+
+  .m-spin {
+    width: 16px; height: 16px;
+    border: 2px solid rgba(255,255,255,.4);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin .7s linear infinite;
+    display: none;
+  }
+  .m-spin.show { display: inline-block; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+
+<div class="modal-backdrop" id="trial-modal" onclick="handleBackdropClick(event)">
+  <div class="modal-box" id="modal-box">
+    <button class="modal-close" onclick="closeTrialModal()" title="Close">&times;</button>
+
+    <div id="modal-plan-badge" class="modal-plan-badge badge-pro">Pro Plan — 7-day free trial</div>
+
+    <!-- FORM SCREEN -->
+    <div class="modal-form-wrap" id="modal-form-wrap">
+      <h2 class="modal-title" id="modal-title">Start your free trial</h2>
+      <p class="modal-sub" id="modal-sub">No credit card needed. Try all features free for 7 days.</p>
+
+      <div class="m-field">
+        <label class="m-label" for="m-name">Your name</label>
+        <input class="m-input" id="m-name" type="text" placeholder="e.g. Ramesh Shah" autocomplete="name">
+        <div class="m-error-msg" id="m-name-err">Please enter your name</div>
+      </div>
+
+      <div class="m-field">
+        <label class="m-label" for="m-biz">Business name & city</label>
+        <input class="m-input" id="m-biz-modal" type="text" placeholder="e.g. Sharma Sweets, Ahmedabad" autocomplete="organization">
+        <div class="m-error-msg" id="m-biz-err">Please enter your business name</div>
+      </div>
+
+      <div class="m-field">
+        <label class="m-label" for="m-phone">WhatsApp number</label>
+        <input class="m-input" id="m-phone" type="tel" placeholder="e.g. 9876543210" autocomplete="tel" maxlength="10">
+        <div class="m-error-msg" id="m-phone-err">Please enter a valid 10-digit number</div>
+      </div>
+
+      <div class="m-field">
+        <label class="m-label" for="m-email">Email address</label>
+        <input class="m-input" id="m-email" type="email" placeholder="e.g. ramesh@gmail.com" autocomplete="email">
+        <div class="m-error-msg" id="m-email-err">Please enter a valid email address</div>
+      </div>
+
+      <button class="m-submit" id="m-submit-btn" onclick="submitTrial()">
+        <span id="m-btn-label">Activate free trial</span>
+        <div class="m-spin" id="m-spin"></div>
+      </button>
+      <p class="m-note">By signing up you agree to our <a href="#">Terms</a> & <a href="#">Privacy Policy</a>. No spam, ever.</p>
+    </div>
+
+    <!-- SUCCESS SCREEN -->
+    <div class="modal-success" id="modal-success">
+      <div class="success-icon">
+        <svg viewBox="0 0 30 30" fill="none" stroke="#0F6E56" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="15" cy="15" r="13"/>
+          <path d="M9 15.5l4 4 8-8"/>
+        </svg>
+      </div>
+      <h3 class="success-title">You're in! 🎉</h3>
+      <p class="success-msg">
+        Your 7-day free trial is activated for <strong id="success-biz-name">your business</strong>.
+        Here's what happens next:
+      </p>
+      <div class="success-steps">
+        <div class="success-step">
+          <div class="s-num">1</div>
+          <span>We'll send your login link on WhatsApp within <strong>15 minutes</strong></span>
+        </div>
+        <div class="success-step">
+          <div class="s-num">2</div>
+          <span>Start generating unlimited captions immediately — no limit during trial</span>
+        </div>
+        <div class="success-step">
+          <div class="s-num">3</div>
+          <span>After 7 days, pay ₹<span id="success-price">299</span>/month to continue — or cancel anytime</span>
+        </div>
+      </div>
+      <a id="wa-contact-btn" href="#" target="_blank" class="wa-btn">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="#fff"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        Chat with us on WhatsApp
+      </a>
+      <button onclick="closeTrialModal()" style="width:100%;margin-top:10px;background:transparent;border:1.5px solid #E8E0D8;border-radius:12px;padding:12px;font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;font-weight:600;color:#6B6B6B;cursor:pointer;">
+        Back to site
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── STATE ──
+const FREE_LIMIT = 5;
+let usageCount = parseInt(localStorage.getItem('cw_usage') || '0');
+let lastCaptions = { hero: '', demo: '' };
+
+// ── TOGGLE GROUPS ──
+function initToggles(rowId) {
+  const row = document.getElementById(rowId);
+  if (!row) return;
+  row.querySelectorAll('.toggle-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      row.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    });
+  });
+}
+initToggles('h-lang-row');
+initToggles('h-tone-row');
+initToggles('d-lang-row');
+initToggles('d-tone-row');
+initToggles('d-platform-row');
+
+// ── USAGE BAR ──
+function updateUsage() {
+  const left = Math.max(0, FREE_LIMIT - usageCount);
+  const pct = (left / FREE_LIMIT) * 100;
+  const fill = document.getElementById('usage-fill');
+  const txt = document.getElementById('usage-text');
+  if (fill) fill.style.width = pct + '%';
+  if (txt) txt.textContent = left > 0 ? left + ' free caption' + (left === 1 ? '' : 's') + ' left' : 'Free limit reached — upgrade for unlimited';
+  if (fill) fill.style.background = left <= 1 ? '#FF6B35' : '#1A7A8A';
+}
+updateUsage();
+
+// ── TOAST ──
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// ── GET SELECTED TOGGLE ──
+function getToggle(rowId) {
+  const row = document.getElementById(rowId);
+  const active = row && row.querySelector('.toggle-btn.active');
+  return active ? active.dataset.val : '';
+}
+
+// ── LOADING STATE ──
+function setLoading(prefix, on) {
+  const btn = document.getElementById(prefix + '-gen-btn');
+  const txt = document.getElementById(prefix + '-btn-text');
+  const dots = document.getElementById(prefix + '-loading');
+  if (btn) btn.disabled = on;
+  if (txt) txt.style.display = on ? 'none' : 'inline';
+  if (dots) dots.classList.toggle('show', on);
+}
+
+// ── PARSE & DISPLAY ──
+function displayResult(prefix, raw) {
+  const lines = raw.trim().split('\n').filter(l => l.trim());
+  const hashLines = lines.filter(l => l.trim().startsWith('#'));
+  const captionLines = lines.filter(l => !l.trim().startsWith('#'));
+
+  const captionEl = document.getElementById(prefix === 'hero' ? 'caption-text' : 'd-caption-text');
+  const hashEl = document.getElementById(prefix === 'hero' ? 'h-hashtags' : 'd-hashtags');
+  const outputArea = document.getElementById(prefix === 'hero' ? 'h-output' : 'd-output');
+
+  if (captionEl) captionEl.textContent = captionLines.join('\n').trim();
+
+  if (hashEl) {
+    const allText = hashLines.join(' ');
+    const tags = allText.match(/#\w+/g) || [];
+    hashEl.innerHTML = tags.map(t => `<span class="htag">${t}</span>`).join('');
+  }
+
+  if (outputArea) outputArea.classList.add('show');
+  lastCaptions[prefix] = raw;
+}
+
+// ── MAIN GENERATE FUNCTION ──
+async function generateCaption(prefix) {
+  const bizId = prefix === 'hero' ? 'h-biz' : 'd-biz';
+  const topicId = prefix === 'hero' ? 'h-topic' : 'd-topic';
+  const langRowId = prefix === 'hero' ? 'h-lang-row' : 'd-lang-row';
+  const toneRowId = prefix === 'hero' ? 'h-tone-row' : 'd-tone-row';
+
+  const biz = document.getElementById(bizId)?.value.trim();
+  const topic = document.getElementById(topicId)?.value.trim();
+  const lang = getToggle(langRowId) || 'English';
+  const tone = getToggle(toneRowId) || 'Festive';
+  const platform = prefix === 'demo' ? (getToggle('d-platform-row') || 'Instagram') : 'Instagram';
+
+  if (!biz) { showToast('Please enter your business name'); document.getElementById(bizId)?.focus(); return; }
+  if (!topic) { showToast('Please describe what to post about'); document.getElementById(topicId)?.focus(); return; }
+
+  if (usageCount >= FREE_LIMIT) {
+    showToast('Free limit reached! Upgrade to Pro for unlimited captions.');
+    return;
+  }
+
+  setLoading(prefix, true);
+
+  const prompt = `You are CaptionWala, an AI that writes social media captions for Indian small businesses.
+
+Write a ${platform} caption for the following:
+- Business: ${biz}
+- Topic: ${topic}
+- Language: ${lang} (if Hinglish, mix Hindi and English naturally as Indians speak; if Hindi, write in Devanagari script; if English, write in English)
+- Tone: ${tone}
+
+Rules:
+1. Write 2-4 sentences of engaging caption body
+2. Add a clear call-to-action at the end
+3. On a new line, add 10-12 relevant hashtags (mix of popular and niche, include city/India-specific ones)
+4. Make it feel authentic to a local Indian business, not a corporate brand
+5. Do NOT include any labels like "Caption:" or "Hashtags:" — just write the caption, then the hashtags on a new line
+6. Keep emojis natural and minimal (1-3 max)`;
+
+  try {
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 400,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+
+    if (!response.ok) {
+      const err = await response.json().catch(() => ({}));
+      throw new Error(err.error?.message || 'API error ' + response.status);
+    }
+
+    const data = await response.json();
+    const text = data.content?.[0]?.text || '';
+
+    if (!text) throw new Error('Empty response from AI');
+
+    usageCount++;
+    localStorage.setItem('cw_usage', usageCount);
+    updateUsage();
+    displayResult(prefix, text);
+
+  } catch (err) {
+    console.error(err);
+    showToast('Could not generate. Please try again.');
+  } finally {
+    setLoading(prefix, false);
+  }
+}
+
+// ── COPY ──
+function copyCaption(prefix) {
+  const captionEl = document.getElementById(prefix === 'hero' ? 'caption-text' : 'd-caption-text');
+  const hashEl = document.getElementById(prefix === 'hero' ? 'h-hashtags' : 'd-hashtags');
+  const btnId = prefix === 'hero' ? 'h-copy-btn' : 'd-copy-btn';
+
+  if (!captionEl || !captionEl.textContent.trim()) { showToast('Generate a caption first!'); return; }
+
+  const tags = Array.from(hashEl.querySelectorAll('.htag')).map(t => t.textContent).join(' ');
+  const full = captionEl.textContent.trim() + (tags ? '\n\n' + tags : '');
+
+  navigator.clipboard.writeText(full).then(() => {
+    const btn = document.getElementById(btnId);
+    if (btn) { btn.textContent = 'Copied!'; btn.classList.add('copied'); }
+    showToast('Caption copied to clipboard!');
+    setTimeout(() => { if (btn) { btn.textContent = 'Copy'; btn.classList.remove('copied'); } }, 2000);
+  }).catch(() => {
+    const ta = document.createElement('textarea');
+    ta.value = full; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    showToast('Caption copied!');
+  });
+}
+
+// ── FAQ ACCORDION ──
+document.getElementById('faq-list')?.addEventListener('click', e => {
+  const q = e.target.closest('.faq-q');
+  if (!q) return;
+  const item = q.closest('.faq-item');
+  const isOpen = item.classList.contains('open');
+  document.querySelectorAll('.faq-item.open').forEach(i => i.classList.remove('open'));
+  if (!isOpen) item.classList.add('open');
+});
+
+// ── ENTER KEY ──
+['h-biz','h-topic','d-biz','d-topic'].forEach(id => {
+  document.getElementById(id)?.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      const prefix = id.startsWith('h-') ? 'hero' : 'demo';
+      generateCaption(prefix);
+    }
+  });
+});
+
+// ── SMOOTH SCROLL ──
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', e => {
+    if (a.getAttribute('href') === '#') return;
+    const target = document.querySelector(a.getAttribute('href'));
+    if (target) { e.preventDefault(); target.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+  });
+});
+
+// ── MODAL ──
+const PLANS = {
+  free:     { label: 'Free Plan',           badgeClass: 'badge-free',     price: 0,   title: 'Start for free',            sub: 'Get 5 captions per day, no credit card needed.' },
+  pro:      { label: 'Pro — 7-day free trial', badgeClass: 'badge-pro',   price: 299, title: 'Start your free trial',     sub: 'No credit card needed. Try all features free for 7 days.' },
+  business: { label: 'Business — 7-day trial', badgeClass: 'badge-business', price: 699, title: 'Start your free trial', sub: 'Full Business plan free for 7 days. No credit card needed.' }
+};
+
+let currentPlan = 'pro';
+
+function openTrialModal(plan) {
+  currentPlan = plan || 'pro';
+  const p = PLANS[currentPlan];
+
+  // Reset to form view
+  document.getElementById('modal-form-wrap').classList.remove('hide');
+  document.getElementById('modal-success').classList.remove('show');
+
+  // Set plan badge
+  const badge = document.getElementById('modal-plan-badge');
+  badge.textContent = p.label;
+  badge.className = 'modal-plan-badge ' + p.badgeClass;
+
+  document.getElementById('modal-title').textContent = p.title;
+  document.getElementById('modal-sub').textContent = p.sub;
+
+  // Clear previous values & errors
+  ['m-name','m-biz-modal','m-phone','m-email'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.classList.remove('error');
+  });
+  ['m-name-err','m-biz-err','m-phone-err','m-email-err'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.classList.remove('show');
+  });
+
+  // Style submit button per plan
+  const btn = document.getElementById('m-submit-btn');
+  btn.className = 'm-submit' + (currentPlan === 'business' ? ' m-submit-teal' : '');
+  document.getElementById('m-btn-label').textContent = currentPlan === 'free' ? 'Get started free' : 'Activate free trial';
+
+  document.getElementById('trial-modal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  setTimeout(() => document.getElementById('m-name').focus(), 120);
+}
+
+function closeTrialModal() {
+  document.getElementById('trial-modal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function handleBackdropClick(e) {
+  if (e.target === document.getElementById('trial-modal')) closeTrialModal();
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeTrialModal();
+});
+
+function validateModal() {
+  let valid = true;
+
+  const name  = document.getElementById('m-name').value.trim();
+  const biz   = document.getElementById('m-biz-modal').value.trim();
+  const phone = document.getElementById('m-phone').value.trim();
+  const email = document.getElementById('m-email').value.trim();
+
+  function setErr(inputId, errId, show) {
+    document.getElementById(inputId).classList.toggle('error', show);
+    document.getElementById(errId).classList.toggle('show', show);
+    if (show) valid = false;
+  }
+
+  setErr('m-name',      'm-name-err',  name.length < 2);
+  setErr('m-biz-modal', 'm-biz-err',   biz.length < 2);
+  setErr('m-phone',     'm-phone-err', !/^[6-9]\d{9}$/.test(phone));
+  setErr('m-email',     'm-email-err', !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email));
+
+  return valid;
+}
+
+async function submitTrial() {
+  if (!validateModal()) return;
+
+  const btn   = document.getElementById('m-submit-btn');
+  const label = document.getElementById('m-btn-label');
+  const spin  = document.getElementById('m-spin');
+
+  btn.disabled = true;
+  label.textContent = 'Activating…';
+  spin.classList.add('show');
+
+  // Simulate processing (replace this with real API/webhook call if needed)
+  await new Promise(r => setTimeout(r, 1600));
+
+  btn.disabled = false;
+  spin.classList.remove('show');
+
+  const bizName = document.getElementById('m-biz-modal').value.trim();
+  const phone   = document.getElementById('m-phone').value.trim();
+  const plan    = PLANS[currentPlan];
+
+  // Show success screen
+  document.getElementById('modal-form-wrap').classList.add('hide');
+  document.getElementById('success-biz-name').textContent = bizName;
+  document.getElementById('success-price').textContent = plan.price;
+
+  // Build WhatsApp link
+  const msg = encodeURIComponent(
+    `Hi CaptionWala! I just signed up for the ${plan.label}.\n\nBusiness: ${bizName}\nPhone: ${phone}\n\nPlease activate my account. 🙏`
+  );
+  document.getElementById('wa-contact-btn').href = `https://wa.me/919999999999?text=${msg}`;
+
+  document.getElementById('modal-success').classList.add('show');
+  showToast('Trial activated! Check WhatsApp for your login link.');
+}
+</script>
+</body>
+</html>
