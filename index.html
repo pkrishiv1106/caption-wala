@@ -968,25 +968,8 @@ Rules:
 6. Keep emojis natural and minimal (1-3 max)`;
 
   try {
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 400,
-        messages: [{ role: 'user', content: prompt }]
-      })
-    });
-
-    if (!response.ok) {
-      const err = await response.json().catch(() => ({}));
-      throw new Error(err.error?.message || 'API error ' + response.status);
-    }
-
-    const data = await response.json();
-    const text = data.content?.[0]?.text || '';
-
-    if (!text) throw new Error('Empty response from AI');
+    // Local AI-style generation so demo works without exposing API keys in frontend.
+    const text = generateCaptionLocally({ biz, topic, lang, tone, platform });
 
     usageCount++;
     localStorage.setItem('cw_usage', usageCount);
@@ -999,6 +982,58 @@ Rules:
   } finally {
     setLoading(prefix, false);
   }
+}
+
+function pick(arr) {
+  return arr[Math.floor(Math.random() * arr.length)];
+}
+
+function generateCaptionLocally({ biz, topic, lang, tone, platform }) {
+  const toneHooks = {
+    Festive: ['Big smiles today', "It's celebration time", 'Your feed needed this joy'],
+    Professional: ["Here's your update", 'Serving with consistency', 'Built for quality-conscious customers'],
+    Friendly: ['Hey friends', "We made this with love", "You'll absolutely enjoy this"],
+    Luxurious: ['Crafted for people with refined taste', 'Premium details, thoughtfully delivered', 'Luxury is in every little touch'],
+    Urgent: ['Limited slots available', 'Today is the best day to grab this', "Don't miss out on this offer"]
+  };
+
+  const ctas = {
+    Instagram: ['DM us to order now!', "Comment \"DETAILS\" and we'll message you.", 'Tap the link in bio to book today.'],
+    Facebook: ['Message us on Facebook to get started.', 'Drop a comment and our team will reach out.', "Send us a quick inbox and we'll guide you."],
+    WhatsApp: ['Reply "YES" and we will share full details on WhatsApp.', 'Ping us on WhatsApp to place your order.', 'Text us now for pricing and availability.'],
+    LinkedIn: ['Send us a message to explore collaboration.', 'Connect with us for complete details.', 'Reach out today to discuss your requirements.']
+  };
+
+  const emojis = ['✨', '🔥', '💛', '📣', '🌟', '📍', '🛍️'];
+  const cityTags = ['#IndiaBusiness', '#SupportLocal', '#VocalForLocal', '#ShopLocalIndia', '#MadeInIndia'];
+
+  const body = [
+    `${pick(toneHooks[tone] || toneHooks.Friendly)} at ${biz}.`,
+    `Today's highlight: ${topic}.`,
+    `Perfect for your ${lang === 'Hindi' ? 'दैनिक पोस्ट' : 'daily feed'} on ${platform}.${pick(emojis)}`,
+    pick(ctas[platform] || ctas.Instagram)
+  ];
+
+  const nicheTags = topic
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 4)
+    .map(w => '#' + w.replace(/[^\w]/g, '').replace(/^./, c => c.toUpperCase()))
+    .filter(t => t.length > 1);
+
+  const bizTag = '#' + biz.replace(/[^\w\s]/g, '').split(/\s+/).slice(0,2).join('');
+
+  const hashtags = [...new Set([
+    bizTag,
+    ...nicheTags,
+    ...cityTags,
+    '#CaptionWala',
+    '#ContentMarketing',
+    '#SmallBusinessGrowth'
+  ])].slice(0, 12);
+
+  return `${body.join(' ')}
+${hashtags.join(' ')}`;
 }
 
 // ── COPY ──
